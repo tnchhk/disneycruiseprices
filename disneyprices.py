@@ -120,7 +120,11 @@ if response.status_code == 200:
           # Iterate through the elements of "travelParties"
           for party in travel_parties.get('0', []):
               stateroom_sub_type = party.get('stateroomSubType', '')
-              total = party.get('price', {}).get('summary', {}).get('total', 0.0)
+              price_summary = party.get('price', {}).get('summary', {})
+              total = price_summary.get('total') if price_summary is not None else None
+              if total is None:
+                  # Handle the case when 'total' is missing or has no value
+                  print("'total' key does not exist or has no value in the dictionary")
 
               # Print the extracted information
               data_export.append([sailing_id, cruise_name, departure_date, arrival_date, stateroom_sub_type, total])
@@ -134,6 +138,7 @@ with open(file_name, mode='w', newline='') as file:
   writer = csv.writer(file)
   for row in data_export:
     writer.writerow(row)
+
 
 
 import os
